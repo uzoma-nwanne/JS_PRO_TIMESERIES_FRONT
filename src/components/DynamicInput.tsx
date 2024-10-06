@@ -1,27 +1,17 @@
 import React, { ChangeEvent } from "react";
 import Input from "./Input";
 
-const DynamicInput: React.FC = () => {
-  const [inputFields, setInputFields] = React.useState<{ column: string }[]>([
-    { column: "" },
-  ]);
-  const handleAddField = () => {
-    const newField = { column: "" };
-    setInputFields([...inputFields, newField]);
-  };
+type Col = {
+    column:string
+}
+interface DynamicProps{
+    inputFields: Col[]
+    handleAddField: ()=>void;
+    handleRemoveField:(index:number)=>void;
+    handleInputChange: (e:ChangeEvent<HTMLInputElement>, index:number)=>void;
+}
 
-  const handleRemoveField = (index: number) => {
-    const data = [...inputFields];
-      data.splice(index, 1);
-      setInputFields(data);
-    
-  };
-
-  const handleInputChange = (e:ChangeEvent<HTMLInputElement>, index:number)=>{
-    const data = [...inputFields];
-    data[index]=  {column:e.target.value};
-    setInputFields(data)
-  }
+const DynamicInput: React.FC<DynamicProps> = ({inputFields, handleAddField, handleRemoveField, handleInputChange}) => {
   return (
     <div>
       {inputFields.map((field, index) => (
