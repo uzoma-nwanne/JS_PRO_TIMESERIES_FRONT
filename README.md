@@ -48,3 +48,5 @@ export default tseslint.config({
   },
 })
 ```
+
+# JS_PRO_TIMESERIES_FRONT
