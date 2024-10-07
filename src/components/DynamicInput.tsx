@@ -18,7 +18,7 @@ const DynamicInput: React.FC<DynamicProps> = ({inputFields, handleAddField, hand
         <div key={index} className="flex flex-row">
           <Input
             name={"field"}
-            label={"Field"}
+            label={"Columns to Aggregate"}
             id={"field"}
             type="text"
             required

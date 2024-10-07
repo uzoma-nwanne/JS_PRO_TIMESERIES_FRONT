@@ -8,7 +8,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   required?: boolean;
   disabled?: boolean;
   onChange: (e:ChangeEvent<HTMLInputElement>)=>void,
-  value:string
+  value?:string
 }
 const Input: React.FC<InputProps> = ({
   name,
