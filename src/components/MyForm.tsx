@@ -1,15 +1,72 @@
-import React, { ChangeEvent, FormEvent, useState} from "react";
+import React, { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import Input from "./Input";
 import DynamicInput from "./DynamicInput";
+//import BarChart from "./BarChart";
+import { Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+ } from "chart.js";
+import { Bar } from "react-chartjs-2";
 
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+interface DataSet{
+  label:string;
+  data:number[];
+  backgroundColor:string;
+  borderColor:string;
+}
+interface ChartData{
+  type:string;
+  data:{
+    datasets: DataSet[]
+    labels?:string [];
+  }
+}
 const MyForm: React.FC = () => {
   const [field, setField] = useState("");
   const [inputFields, setInputFields] = React.useState<{ column: string }[]>([
     { column: "" },
   ]);
   const [file, setFile] = useState<File | undefined>(undefined);
-  const [data, setData] = useState({});
-  const [interval, setInterval] = useState<string>('');
+  const [data, setData] = useState({ data: [] }); //data from API
+  const [interval, setInterval] = useState<string>("");
+  const [chartData, setChartData] = useState<ChartData>({type:'bar', data:{labels:[], datasets:[]}});
+
+  useEffect(() => {
+    const val = data?.data;
+    if (val === undefined) return;
+    const labels = Object.values(val).map((cur:{dateField:string}) => cur?.dateField);
+    const columnsToAggregate = inputFields.flatMap((input) =>
+      Object.values(input)
+    );
+    const colours = ['rgba(75,192,192,0.4)',"rgb(173,255,47)","rgb(255, 99, 132)", "rgb(50,205,50)", 'rgba(75,192,192,1)']
+    const rawData = Object.values(val);
+    const newDataSet = columnsToAggregate.map((column, index) =>{
+      const data = rawData.map((data) => data[column]);
+      const indexMod =  index % colours.length;
+      return {
+        label: column,
+        data: data,
+        backgroundColor: colours[indexMod],  // Color of the points
+       borderColor: colours[indexMod + 1] ,  // Color of the line connecting the points
+      };
+    }
+    );
+    setChartData({type:'bar', data:{labels: labels, datasets:newDataSet}});
+  }, [data?.data, inputFields]);
 
   const handleAddField = () => {
     const newField = { column: "" };
@@ -32,36 +89,38 @@ const MyForm: React.FC = () => {
   };
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if(typeof file === 'undefined') return ;
-    const columnsToAggregate = inputFields.flatMap((input)=>Object.values(input));
+    setData({data:[]}); //reset data object to empty object before fetching
+    if (typeof file === "undefined") return; //check that file is not undefined. This is a typescript requirement
+    const columnsToAggregate = inputFields.flatMap((input) =>
+      Object.values(input)
+    );
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('interval', interval);
-    formData.append('dateField', field);
-    formData.append('columnsToAggregate', columnsToAggregate.toString());
-    const results = await fetch("http://localhost:5000/timeseries/csv",{
-        method:"POST",
-        body:formData
-    })
+    formData.append("file", file);
+    formData.append("interval", interval);
+    formData.append("dateField", field);
+    formData.append("columnsToAggregate", columnsToAggregate.toString()); //array values must be  converted to string before being added to form
+    const results = await fetch("http://localhost:5000/timeseries/csv", {
+      method: "POST",
+      // headers: { "Content-Type": "multipart/form-data" },
+      body: formData,
+    });
     const json = await results.json();
-    setData(json)
-    console.log(data)
+    setData(json);
   };
   const handleField = (e: ChangeEvent<HTMLInputElement>): void => {
     setField(e.target.value);
-    // console.log(field)
   };
 
   const handleFile = (e: ChangeEvent<HTMLInputElement>): void => {
     const target = e.target as HTMLInputElement & {
       files: FileList;
     };
-    setFile(target.files[0])
+    setFile(target.files[0]);
   };
 
-  const handleInterval = (e:ChangeEvent<HTMLInputElement>):void =>{
+  const handleInterval = (e: ChangeEvent<HTMLInputElement>): void => {
     setInterval(e.target.value);
-  }
+  };
   return (
     <>
       <h1>Historical Data Aggregation</h1>
@@ -75,7 +134,7 @@ const MyForm: React.FC = () => {
           value={field}
           onChange={handleField}
         />
-         <Input
+        <Input
           name="interval"
           label="Interval"
           id="interval"
@@ -103,6 +162,7 @@ const MyForm: React.FC = () => {
           <button className="m-4 w-1/4 self-centre">Submit</button>
         </div>
       </form>
+      {chartData?.data.datasets &&<p>chartData?.datasets</p> &&<Bar data={chartData.data} />}
     </>
   );
 };
