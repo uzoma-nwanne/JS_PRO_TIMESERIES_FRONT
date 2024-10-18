@@ -1,40 +1,8 @@
-import React, { ChangeEvent, FormEvent, useState, useEffect } from "react";
+import React, { ChangeEvent, FormEvent, useState} from "react";
 import Input from "./Input";
 import DynamicInput from "./DynamicInput";
-//import BarChart from "./BarChart";
-import { Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
- } from "chart.js";
-import { Bar } from "react-chartjs-2";
+import BarChart from "./BarChart";
 
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-interface DataSet{
-  label:string;
-  data:number[];
-  backgroundColor:string;
-  borderColor:string;
-}
-interface ChartData{
-  type:string;
-  data:{
-    datasets: DataSet[]
-    labels?:string [];
-  }
-}
 const MyForm: React.FC = () => {
   const [field, setField] = useState("");
   const [inputFields, setInputFields] = React.useState<{ column: string }[]>([
@@ -43,31 +11,7 @@ const MyForm: React.FC = () => {
   const [file, setFile] = useState<File | undefined>(undefined);
   const [data, setData] = useState({ data: [] }); //data from API
   const [interval, setInterval] = useState<string>("");
-  const [chartData, setChartData] = useState<ChartData>({type:'bar', data:{labels:[], datasets:[]}});
-
-  useEffect(() => {
-    const val = data?.data;
-    if (val === undefined) return;
-    const labels = Object.values(val).map((cur:{dateField:string}) => cur?.dateField);
-    const columnsToAggregate = inputFields.flatMap((input) =>
-      Object.values(input)
-    );
-    const colours = ['rgba(75,192,192,0.4)',"rgb(173,255,47)","rgb(255, 99, 132)", "rgb(50,205,50)", 'rgba(75,192,192,1)']
-    const rawData = Object.values(val);
-    const newDataSet = columnsToAggregate.map((column, index) =>{
-      const data = rawData.map((data) => data[column]);
-      const indexMod =  index % colours.length;
-      return {
-        label: column,
-        data: data,
-        backgroundColor: colours[indexMod],  // Color of the points
-       borderColor: colours[indexMod + 1] ,  // Color of the line connecting the points
-      };
-    }
-    );
-    setChartData({type:'bar', data:{labels: labels, datasets:newDataSet}});
-  }, [data?.data, inputFields]);
-
+  
   const handleAddField = () => {
     const newField = { column: "" };
     setInputFields([...inputFields, newField]);
@@ -162,7 +106,7 @@ const MyForm: React.FC = () => {
           <button className="m-4 w-1/4 self-centre">Submit</button>
         </div>
       </form>
-      {chartData?.data.datasets &&<p>chartData?.datasets</p> &&<Bar data={chartData.data} />}
+      {data?.data.length && <BarChart data={data.data} inputFields={inputFields} />}
     </>
   );
 };
