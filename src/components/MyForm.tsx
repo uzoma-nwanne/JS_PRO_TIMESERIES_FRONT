@@ -5,9 +5,7 @@ import BarChart from "./BarChart";
 
 const MyForm: React.FC = () => {
   const [field, setField] = useState("");
-  const [inputFields, setInputFields] = React.useState<{ column: string }[]>([
-    { column: "" },
-  ]);
+  const [inputFields, setInputFields] = React.useState<{ column: string}[]>([]);
   const [file, setFile] = useState<File | undefined>(undefined);
   const [data, setData] = useState({ data: [] }); //data from API
   const [interval, setInterval] = useState<string>("");
@@ -68,7 +66,7 @@ const MyForm: React.FC = () => {
   return (
     <>
       <h1>Historical Data Aggregation</h1>
-      <form className="flex flex-col" onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-y-3" onSubmit={handleSubmit}>
         <Input
           name="dateField"
           label="Date Field"

@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes,ChangeEvent } from "react";
+import React, { InputHTMLAttributes, ChangeEvent } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
@@ -7,8 +7,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   type: string;
   required?: boolean;
   disabled?: boolean;
-  onChange: (e:ChangeEvent<HTMLInputElement>)=>void,
-  value?:string
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  value?: string;
 }
 const Input: React.FC<InputProps> = ({
   name,
@@ -18,26 +18,26 @@ const Input: React.FC<InputProps> = ({
   required,
   disabled,
   onChange,
-  value
+  value,
 }) => {
   return (
-    <div className="w-full p-4">
-      <label className="font-bold w-1/4 text-lg">
+    <div className="grid grid-cols-6 gap-x-1 gap-y-3">
+      <label className="col-span-2 font-bold text-lg justify-items-start" htmlFor={name}>
         {label}:
-        <input
-          name={name}
-          type={type}
-          id={id}
-          required={required}
-          disabled={disabled}
-          onChange={onChange}
-          value={value}
-          className="w-3/4 p-2 ml-2 outline-none bg-white
+      </label>
+      <input
+        name={name}
+        type={type}
+        id={id}
+        required={required}
+        disabled={disabled}
+        onChange={onChange}
+        value={value}
+        className="col-span-3 p-2 outline-none bg-white
       font-light
       border-2
-      rounded-md"
-        />
-      </label>
+      rounded-md justify-items-start"
+      />
     </div>
   );
 };

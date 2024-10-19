@@ -1,36 +1,72 @@
 import React, { ChangeEvent } from "react";
-import Input from "./Input";
-
 type Col = {
-    column:string
-}
-interface DynamicProps{
-    inputFields: Col[]
-    handleAddField: ()=>void;
-    handleRemoveField:(index:number)=>void;
-    handleInputChange: (e:ChangeEvent<HTMLInputElement>, index:number)=>void;
+  column: string;
+};
+interface DynamicProps {
+  inputFields: Col[];
+  handleAddField: () => void;
+  handleRemoveField: (index: number) => void;
+  handleInputChange: (e: ChangeEvent<HTMLInputElement>, index: number) => void;
 }
 
-const DynamicInput: React.FC<DynamicProps> = ({inputFields, handleAddField, handleRemoveField, handleInputChange}) => {
+const DynamicInput: React.FC<DynamicProps> = ({
+  inputFields,
+  handleAddField,
+  handleRemoveField,
+  handleInputChange,
+}) => {
   return (
-    <div className="flex flex-col md:flex-row align-center">
+    <div className="flex flex-col gap-x-1 gap-y-3 ">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-x-1 gap-y-3">
+        <label
+          className="col-span-1 md:col-span-2 font-bold text-lg justify-items-start"
+          htmlFor={"field"}
+        >
+          Columns To Aggregate:
+        </label>
+        <p className="col-span-1 md:col-span-2">Columns To Aggregate</p>
+      </div>
       {inputFields.map((field, index) => (
-        <div key={index} className="">
-          <Input
+        <div key={index} className="grid grid-cols-6 gap-x-1 gap-y-3">
+          {/* <Input
             name={"field"}
-            label={"Columns to Aggregate"}
+            label={""}
             id={"field"}
             type="text"
             required
             value={field.column}
             onChange={e=>handleInputChange(e,index)}
+          /> */}
+          <label
+            className="col-span-2 font-bold text-lg justify-items-start"
+            htmlFor={"field"}
+          ></label>
+          <input
+            name={"field"}
+            type={"text"}
+            id={"field"}
+            required
+            onChange={(e) => handleInputChange(e, index)}
+            value={field.column}
+            className="col-span-3 p-2 outline-none bg-white
+      font-light
+      border-2
+      rounded-md justify-items-start"
           />
-          {index === 0 ? '':<button onClick={() => handleRemoveField(index)}
-            className="p-2 border-2 w-1/4 m-8"> Remove Field</button>}
+          <button onClick={() => handleRemoveField(index)} className="">
+            -
+          </button>
         </div>
       ))}
-      <button onClick={handleAddField} className="w-1/4 h-20 items-center m-10">Add Field</button>
+      <div className="grid grid-cols-6 gap-x-1 gap-y-3">
+        <button
+          onClick={handleAddField}
+          className="col-start-3"
+        >
+          Add Field
+        </button>
       </div>
+    </div>
   );
 };
 
